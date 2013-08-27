@@ -2,7 +2,7 @@
   "name": "django-101-presentation",
   "version": "0.0.1",
   "dependencies": {
-    "reveal.js": "2.5.x"
+    "reveal.js": "2.5.0"
   },
   "ignore": [
     "**/.*",
