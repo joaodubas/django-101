@@ -1,0 +1,23 @@
+#!/usr/bin/env node
+var http = require('http');
+var static = require('node-static');
+var file = new static.Server('./public');
+
+var argv = Array.prototype.slice.call(process.argv, 2);
+var env = argv[0] || 'master';
+var port = env === 'master' ? 8081 : 8080;
+var confFile = '/static/js/' + env + '.js';
+
+function server(req, res) {
+  req.addListener('end', function () {
+    if (/conf\.js$/.test(req.url)) {
+      file.serveFile(confFile, 200, {}, req, res);
+    } else {
+      file.serve(req, res);
+    }
+  }).resume();
+}
+
+http.createServer(server).listen(port);
+
+console.log('Environment: ' + env + '. Listening on port: ' + port + '.');

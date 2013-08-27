@@ -1,0 +1,9 @@
+# folders
+node_modules
+components
+
+# files
+npm-debug.log
+.tern-port
+*.swp
+

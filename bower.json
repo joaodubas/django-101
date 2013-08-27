@@ -1,0 +1,12 @@
+{
+  "name": "django-101-presentation",
+  "version": "0.0.1",
+  "dependencies": {
+    "reveal.js": "2.5.x"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "public/static/bower_components"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "name": "django-101-pressentation",
+  "author": "João Paulo Dubas <joao.dubas@gmail.com>",
+  "version": "0.0.1",
+  "description": "Introduction to Django Framework",
+  "private": true,
+  "bin": {
+    "server": "./bin/server"
+  },
+  "scripts": {
+    "start": "node ./bin/server",
+    "prepublish": "./node_modules/.bin/bower install"
+  },
+  "keywords": [
+    "web",
+    "web development",
+    "python",
+    "django",
+    "introduction",
+    "101"
+  ],
+  "dependencies": {
+    "bower": "1.2.x",
+    "node-static": "0.7.x"
+  },
+  "license": "MIT",
+  "engine": {
+    "node": ">=0.10.0"
+  }
+}
