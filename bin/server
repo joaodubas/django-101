@@ -5,7 +5,7 @@ var file = new static.Server('./public');
 
 var argv = Array.prototype.slice.call(process.argv, 2);
 var env = argv[0] || 'master';
-var port = env === 'master' ? 8081 : 8080;
+var port = env === 'master' ? 8051 : 8050;
 var confFile = '/static/js/' + env + '.js';
 
 function server(req, res) {
