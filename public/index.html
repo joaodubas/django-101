@@ -21,7 +21,44 @@
         <h1>Django 101</h1>
       </section>
       <section>
-        <h2>Instalando</h2>
+        <section>
+          <h2>Instalando</h2>
+        </section>
+        <section>
+          <h3>O ambiente:</h3>
+          <h4>
+            <code>virtualenv</code>
+            &amp
+            <code>virtualenvwrapper</code>
+          </h4>
+          <pre class="shell" data-trim>
+$ sudo pip install virtualenv virtualenvwrapper
+$ export WORKON_HOME=$HOME/.venv  # onde ficam os seus ambientes virtuais
+$ export PROJECT_HOME=$HOME/public  # onde ficam os projetos
+$ source /usr/local/bin/virtualenvwrapper.sh  # inicializa variáveis de ambiente
+          </pre>
+        </section>
+        <section>
+          <h3>O Django</h3>
+          <pre class="shell" data-trim>
+$ mkproject meu-projeto  # cria pasta em $PROJECT_HOME e $WORKON_HOME
+$ pip install django
+$ django-admin.py --version
+1.5.x
+          </pre>
+        </section>
+        <section>
+          <p>Caso você já tenha um ambiente virtual e um projeto, é possível
+              ligar os dois usando <code>setvirtualenvproject</code>.</p>
+          <pre class="shell" data-trim>
+$ setvirtualenvproject $WORKON_HOME/<ambiente-virtual> $PROJECT_HOME/<projeto>
+          </pre>
+        </section>
+      </section>
+      <section>
+        <section>
+          <h2>O projeto</h2>
+        </section>
       </section>
       <section>
         <h2>Como funciona</h2>
