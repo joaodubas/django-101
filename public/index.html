@@ -10,6 +10,13 @@
       id="theme">
   <link rel="stylesheet"
       href="/static/bower_components/reveal.js/lib/css/zenburn.css">
+  <style>
+    .app-show-href:after {
+      color: #ddd;
+      font-size: 0.625em;
+      content: ' (' attr(href) ')';
+    }
+  </style>
   <!--[if lt IE 9]>
   <script src="/static/bower_components/revela.js/lib/js/html5shiv.js"></script>
   <![endif]-->
@@ -22,7 +29,7 @@
           data-background-image="/static/img/pres_pony.png"
           title="Django 101">
         <p style="display: none"><small><strong>Fonte:</strong>
-            <a href="http://stv-static.s3.amazonaws.com/django-unchained/02/display/1280x800.png">Django</a></small></p>
+          <a href="http://stv-static.s3.amazonaws.com/django-unchained/02/display/1280x800.png">Django</a></small></p>
       </section>
       <section>
         <section>
@@ -32,44 +39,44 @@
           <h3>O ambiente:</h3>
           <h4>
             <code>virtualenv</code>
-            &amp
+            &amp;
             <code>virtualenvwrapper</code>
           </h4>
-          <pre class="shell" data-trim>
+          <pre><code class="shell" data-trim>
 $ sudo pip install virtualenv virtualenvwrapper
 $ export WORKON_HOME=$HOME/.venv  # onde ficam os seus ambientes virtuais
 $ export PROJECT_HOME=$HOME/public  # onde ficam os projetos
 $ source /usr/local/bin/virtualenvwrapper.sh  # inicializa vari&aacute;veis de ambiente
-          </pre>
+          </code></pre>
         </section>
         <section>
           <h3>O Django</h3>
-          <pre class="shell" data-trim>
+          <pre><code class="shell" data-trim>
 $ mkproject meu-projeto  # cria pasta em $PROJECT_HOME e $WORKON_HOME
 $ pip install django
 $ django-admin.py --version
 1.5.x
-          </pre>
+          </code></pre>
         </section>
         <section>
           <p>Caso voc&ecirc; j&aacute; tenha um ambiente virtual e um projeto,
               &eacute; poss&iacute;vel ligar os dois usando
               <code>setvirtualenvproject</code>.</p>
-          <pre class="shell" data-trim>
+          <pre><code class="shell" data-trim>
 $ setvirtualenvproject $WORKON_HOME/&lt;ambiente&gt; $PROJECT_HOME/&lt;projeto&gt;
-          </pre>
+          </code></pre>
         </section>
         <section>
           <h4>Criando o projeto</h4>
-          <pre class="shell" data-trim>
+          <pre><code class="shell" data-trim>
 $ django-admin.py startprojetct &lt;nome-do-projeto&gt;
-          </pre>
+          </code></pre>
           <img src="/static/img/pres_django_proj_structure.png"
               style="width: 50%">
         </section>
         <section>
           <h4>Servindo o projeto</h4>
-          <pre class="shell" data-trim>
+          <pre><code class="shell" data-trim>
 $ python manage.py runserver
 Validating models...
 
@@ -79,16 +86,16 @@ Django version 1.5.2, using settings 'a_fazer.settings'
 Development server is running at http://127.0.0.1:8000/
 Quit the server with CONTROL-C.
 [27/Aug/2013 19:15:03] "GET / HTTP/1.1" 200 1958
-          </pre>
+          </code></pre>
         </section>
         <section>
           <img src="/static/img/pres_django_server.png">
         </section>
         <section>
           <h4>Criando uma aplica&ccedil;&atilde;o</h4>
-          <pre class="shell" data-trim>
+          <pre><code class="shell" data-trim>
 $ python manage.py startapp &lt;nome-da-app&gt;
-          </pre>
+          </code></pre>
           <img src="/static/img/pres_django_app_structure.png"
               style="width: 25%">
           <p><small>Em geral tamb&eacute;m adiciono os arquivos
@@ -105,6 +112,124 @@ $ python manage.py startapp &lt;nome-da-app&gt;
           <p><small><strong>Fonte:</strong>
               <a href="http://littlegreenriver.com/weblog/2013/03/23/django-for-designers/">Karen Rustad</a>
           </small></p>
+        </section>
+        <section>
+          <h3>URLs</h3>
+          <pre><code class="python" data-trim>
+from django.conf.urls import patterns, url
+from .views import HSListView, HSCreateView, HSDetailView, HSEditView, HSRemoveView
+
+urlpatterns = patterns('',
+    url(r'^create/$', HSCreateView.as_view(), name='create_hotsite'),
+    url(r'^detail/(?P&lt;slug&gt;[\w\-]+)/$', HSDetailView.as_view(), name='detail_hotsite'),
+    url(r'^edit/(?P&lt;slug&gt;[\w\-]+)/$', HSEditView.as_view(), name='edit_hotsite'),
+    url(r'^remove/(?P&lt;slug&gt;[\w\-]+)/$', HSRemoveView.as_view(), name='delete_hotsite'),
+    url(r'^$', HSListView.as_view(), name='list_hotsite'),
+)
+          </code></pre>
+        </section>
+        <section>
+          <h3>Views</h3>
+          <pre><code class="python" data-trim>
+from django.core.urlresolvers import reverse_lazy
+from django.views.generic import ListView
+from braces.views import LoginRequiredMixin
+from utils.views import SearchMixin
+
+
+class HotsiteListView(LoginRequiredMixin, SearchMixin, ListView):
+    login_url = reverse_lazy('auth:login')
+    model = Hotsite
+    queryset_filter = ('page_title__icontains', )
+
+    def get_context_data(self, **kwargs):
+        context = super(HotsiteListView, self).get_context_data(**kwargs)
+        if self.get_queryterm_value():
+            context['queryterm'] = self.get_queryterm_value()
+        return context
+          </code></pre>
+        </section>
+        <section>
+          <h3>Observa&ccedil;&atilde;o</h3>
+          <pre><code class="python" data-trim>
+from bottle import Bottle, request, jinja2_template as template
+from .db import plugin
+from .models import Hotsite
+
+
+@app.get('/hotsite')
+def list_hotsite(db):
+    tmpl = 'core/hotsite_list.html'
+    hotsites = db.query(Hotsite).all()
+    if not request.query.get('q'):
+        return template(tmpl, {'hotsite_list': hotsites})
+    q = request.query.get('q')
+    hotsites = db.query(Hotsite).filter(Hotsite.title.like('%{0}%'.format(q)))
+    return template(tmpl, {'hotsite_list': hotsites, 'queryterm': q})
+          </code></pre>
+          <p><small>Acho bottle e flask mais elegantes nesse ponto.</small></p>
+        </section>
+        <section>
+          <h3>Models</h3>
+          <pre><code class="python" data-trim>
+class Hotsite(ToDictMixin):
+    slug = models.SlugField(max_length=128, unique=True)
+    url = models.CharField(max_length=64)
+    start_at = models.DateField(verbose_name=_(u'data de in&iacute;cio'))
+    end_at = models.DateField(blank=True, null=True, verbose_name=_(u'data de sa&iacute;da'))
+    partner = models.IntegerField(null=True, blank=True, verbose_name=_(u'parceiro'))
+    page_title = models.CharField(max_length=128, verbose_name=_(u't&iacute;tulo'))
+    meta_description = models.CharField(max_length=128, verbose_name=_(u'descri&ccedil;&atilde;o'))
+    meta_canonical_url = models.URLField(verbose_name=_(u'URL can&ocirc;nica'))
+    meta_keywords = models.CharField(max_length=128, verbose_name=_(u'keywords'))
+
+    def __unicode__(self):
+        return u'Hotsite: {0}'.format(self.page_title)
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('hotsite:detail_hotsite', (), { 'slug': self.slug })
+          </code></pre>
+        </section>
+        <section>
+          <h3>Forms</h3>
+          <pre><code class="python" data-trim>
+from django.conf import settings
+from django import forms
+
+
+class HotsiteForm(forms.ModelForm):
+    class Meta:
+        model = Hotsite
+
+    class Media:
+        tmpl = '{0}{{0}}'.format(settings.STATIC_URL)
+        css = { 'all': (tmpl.format('css/datepicker.css'), ) }
+        js = (
+            tmpl.format('js/date-time/bootstrap-datepicker.min.js'),
+            tmpl.format('js/date-time/locales/bootstrap-datepicker.pt-BR.js'),
+            tmpl.format('js/app-date-picker.js')
+        )
+          </code></pre>
+        </section>
+        <section>
+          <h3>Templates</h3>
+          <pre><code class="html" data-trim>
+{% extends "base_app.html" %}
+{% block title %}Hotsite{% endblock title %}
+{% block content %}
+  &#133;
+  {% for item in hotsite_list %}
+    <tr>
+      <td><a href="{{ item.get_absolute_url }}">{{ item.page_title }}</a></td>
+      <td>{{ item.get_category_display }}</td>
+      <td>{{ item.url }}</td>
+      <td>{{ item.created_at }}</td>
+    </tr>
+  {% endfor %}
+  &#133;
+{% endblock content %}
+          </code></pre>
         </section>
       </section>
       <!--
@@ -136,7 +261,16 @@ $ python manage.py startapp &lt;nome-da-app&gt;
           <h3>Admin</h3>
         </section>
         <section>
+          <img src="/static/img/pres_django_admin.png" style="width: 65%;">
+        </section>
+        <section>
           <h3>Autentica&ccedil;&atilde;o/Autoriza&ccedil;&atilde;o</h3>
+        </section>
+        <section>
+          <img src="/static/img/pres_django_autenticacao.png" style="width: 65%;">
+        </section>
+        <section>
+          <img src="/static/img/pres_django_autorizacao.png" style="width: 65%;">
         </section>
       </section>
       <section>
@@ -145,10 +279,12 @@ $ python manage.py startapp &lt;nome-da-app&gt;
         </section>
         <section>
           <h3>South</h3>
+          <img src="/static/img/pres_south.jpg" style="width: 12.5%;">
           <p><a href="http://south.readthedocs.org/en/latest/">Docs</a></p>
         </section>
         <section>
           <h3>django-debug-toolbar</h3>
+          <img src="/static/img/pres_debug_toolbar.png" style="width: 37.5%;">
           <p><a href="https://github.com/django-debug-toolbar/django-debug-toolbar">Repo</a></p>
         </section>
         <section>
@@ -168,15 +304,22 @@ $ python manage.py startapp &lt;nome-da-app&gt;
         <section>
           <ul>
             <li class="fragment">
-              <a href="http://docs.python.org/2.7/">Docs Python</a>
+              <a class="app-show-href" href="http://docs.python.org/2.7/">Docs Python</a>
             </li>
             <li class="fragment">
-              <a href="https://docs.djangoproject.com/en/1.5/">Docs Django</a>
+              <a class="app-show-href" href="https://docs.djangoproject.com/en/1.5/">Docs Django</a>
             </li>
             <li class="fragment">
-              <a href="https://www.facebook.com/pycursos">Mutir&atilde;o Python</a>
+              <a class="app-show-href" href="http://http://ccbv.co.uk/">Django Class-Based Views</a>
             </li>
-            <li class="fragment"><a href="http://pyvideo.org/">PyVideo</a></li>
+            <li class="fragment">
+              <a class="app-show-href" href="https://www.facebook.com/pycursos">Mutir&atilde;o Python</a>
+              <br>
+              <a class="app-show-href" href="http://goo.gl/E4j8cV">Compilado</a>
+            </li>
+            <li class="fragment">
+              <a class="app-show-href" href="http://pyvideo.org/">PyVideo</a>
+            </li>
           </ul>
         </section>
         <section>
