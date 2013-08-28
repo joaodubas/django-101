@@ -17,8 +17,12 @@
 <body>
   <div class="reveal">
     <div class="slides">
-      <section>
-        <h1>Django 101</h1>
+      <section
+          data-background-size="contain"
+          data-background-image="/static/img/pres_pony.png"
+          title="Django 101">
+        <p style="display: none"><small><strong>Fonte:</strong>
+            <a href="http://stv-static.s3.amazonaws.com/django-unchained/02/display/1280x800.png">Django</a></small></p>
       </section>
       <section>
         <section>
@@ -35,7 +39,7 @@
 $ sudo pip install virtualenv virtualenvwrapper
 $ export WORKON_HOME=$HOME/.venv  # onde ficam os seus ambientes virtuais
 $ export PROJECT_HOME=$HOME/public  # onde ficam os projetos
-$ source /usr/local/bin/virtualenvwrapper.sh  # inicializa variáveis de ambiente
+$ source /usr/local/bin/virtualenvwrapper.sh  # inicializa vari&aacute;veis de ambiente
           </pre>
         </section>
         <section>
@@ -48,38 +52,82 @@ $ django-admin.py --version
           </pre>
         </section>
         <section>
-          <p>Caso você já tenha um ambiente virtual e um projeto, é possível
-              ligar os dois usando <code>setvirtualenvproject</code>.</p>
+          <p>Caso voc&ecirc; j&aacute; tenha um ambiente virtual e um projeto,
+              &eacute; poss&iacute;vel ligar os dois usando
+              <code>setvirtualenvproject</code>.</p>
           <pre class="shell" data-trim>
-$ setvirtualenvproject $WORKON_HOME/<ambiente-virtual> $PROJECT_HOME/<projeto>
+$ setvirtualenvproject $WORKON_HOME/&lt;ambiente&gt; $PROJECT_HOME/&lt;projeto&gt;
           </pre>
         </section>
+        <section>
+          <h4>Criando o projeto</h4>
+          <pre class="shell" data-trim>
+$ django-admin.py startprojetct &lt;nome-do-projeto&gt;
+          </pre>
+          <img src="/static/img/pres_django_proj_structure.png"
+              style="width: 50%">
+        </section>
+        <section>
+          <h4>Servindo o projeto</h4>
+          <pre class="shell" data-trim>
+$ python manage.py runserver
+Validating models...
+
+0 errors found
+August 27, 2013 - 19:14:54
+Django version 1.5.2, using settings 'a_fazer.settings'
+Development server is running at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+[27/Aug/2013 19:15:03] "GET / HTTP/1.1" 200 1958
+          </pre>
+        </section>
+        <section>
+          <img src="/static/img/pres_django_server.png">
+        </section>
+        <section>
+          <h4>Criando uma aplica&ccedil;&atilde;o</h4>
+          <pre class="shell" data-trim>
+$ python manage.py startapp &lt;nome-da-app&gt;
+          </pre>
+          <img src="/static/img/pres_django_app_structure.png"
+              style="width: 25%">
+          <p><small>Em geral tamb&eacute;m adiciono os arquivos
+              <code>forms.py</code>, <code>urls.py</code>,
+              <code>admin.py</code></small></p>
+        </section>
       </section>
+      <section>
+        <section>
+          <h2>Como funciona</h2>
+        </section>
+        <section>
+          <img src="/static/img/pres_django_req_resp_01.png" style="width: 25%;">
+          <p><small><strong>Fonte:</strong>
+              <a href="http://littlegreenriver.com/weblog/2013/03/23/django-for-designers/">Karen Rustad</a>
+          </small></p>
+        </section>
+      </section>
+      <!--
       <section>
         <section>
           <h2>O projeto</h2>
+          <h3>django-a-fazer</h3>
+        </section>
+        <section>
+          <h3>Requisitos</h3>
+          <p>O usu&aacute;rio deve ser capaz de &#133;</p>
+          <ul>
+            <li class="fragment">&#133; inserir um <em>a fazer</em>.</li>
+            <li class="fragment">completar um <em>a fazer</em>.</li>
+            <li class="fragment">completar todos os <em>a fazeres</em>.</li>
+            <li class="fragment">apagar todos os <em>a fazeres</em>
+                completos.</li>
+            <li class="fragment">listar todos os <em>a fazeres</em> incompletos
+                ou completos.</li>
+          </ul>
         </section>
       </section>
-      <section>
-        <h2>Como funciona</h2>
-      </section>
-      <section>
-        <section>
-          <h2>Ciclo Request &rarr; Response</h2>
-        </section>
-        <section>
-          <h3>URLs conf</h3>
-        </section>
-        <section>
-          <h3>Views</h3>
-        </section>
-        <section>
-          <h3>Templates</h3>
-        </section>
-        <section>
-          <h3>Models</h3>
-        </section>
-      </section>
+      -->
       <section>
         <section>
           <h2>Baterias incluidas</h2>
@@ -88,7 +136,7 @@ $ setvirtualenvproject $WORKON_HOME/<ambiente-virtual> $PROJECT_HOME/<projeto>
           <h3>Admin</h3>
         </section>
         <section>
-          <h3>Autenticação/Autorização</h3>
+          <h3>Autentica&ccedil;&atilde;o/Autoriza&ccedil;&atilde;o</h3>
         </section>
       </section>
       <section>
@@ -97,12 +145,50 @@ $ setvirtualenvproject $WORKON_HOME/<ambiente-virtual> $PROJECT_HOME/<projeto>
         </section>
         <section>
           <h3>South</h3>
+          <p><a href="http://south.readthedocs.org/en/latest/">Docs</a></p>
+        </section>
+        <section>
+          <h3>django-debug-toolbar</h3>
+          <p><a href="https://github.com/django-debug-toolbar/django-debug-toolbar">Repo</a></p>
+        </section>
+        <section>
+          <h3>django-braces</h3>
+          <p><a href="http://django-braces.readthedocs.org/en/latest/index.html">Docs</a></p>
+        </section>
+        <section>
+          <h3>django-statsd</h3>
+          <p><a href="http://django-statsd.readthedocs.org/en/latest/index.html">Docs</a></p>
+          <p><a href="https://github.com/andymckay/django-statsd">Repo</a></p>
+        </section>
+      </section>
+      <section>
+        <section>
+          <h2>Aprenda mais</h2>
+        </section>
+        <section>
+          <ul>
+            <li class="fragment">
+              <a href="http://docs.python.org/2.7/">Docs Python</a>
+            </li>
+            <li class="fragment">
+              <a href="https://docs.djangoproject.com/en/1.5/">Docs Django</a>
+            </li>
+            <li class="fragment">
+              <a href="https://www.facebook.com/pycursos">Mutir&atilde;o Python</a>
+            </li>
+            <li class="fragment"><a href="http://pyvideo.org/">PyVideo</a></li>
+          </ul>
+        </section>
+        <section>
+          <a href="https://django.2scoops.org/">
+            <img src="/static/img/pres_tsd.png">
+          </a>
         </section>
       </section>
       <section
           data-background-size="contain"
           data-background-image="/static/img/pres_so_long_2.jpg">
-        So long, and thanks for all the fish.
+        <h2>So long, and thanks for all the fish.</h2>
       </section>
     </div>
   </div>
